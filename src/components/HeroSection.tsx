@@ -1,9 +1,23 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Code, Cpu, Search, Zap } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
+import FileUpload from "./FileUpload";
+import AnalysisModal from "./AnalysisModal";
+import DocumentationModal from "./DocumentationModal";
 
 const HeroSection = () => {
+  const [showUpload, setShowUpload] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const [showDocumentation, setShowDocumentation] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+
+  const handleFilesUploaded = (files: File[]) => {
+    setUploadedFiles(files);
+    setShowUpload(false);
+    setShowAnalysis(true);
+  };
   const features = [
     {
       icon: <Code className="h-6 w-6" />,
@@ -59,11 +73,19 @@ const HeroSection = () => {
           </div>
           
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Button 
+              size="lg" 
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              onClick={() => setShowUpload(true)}
+            >
               Start Analysis
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <Button size="lg" variant="outline">
+            <Button 
+              size="lg" 
+              variant="outline"
+              onClick={() => setShowDocumentation(true)}
+            >
               View Documentation
             </Button>
           </div>
@@ -84,6 +106,22 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <FileUpload 
+        isOpen={showUpload} 
+        onClose={() => setShowUpload(false)}
+        onFilesUploaded={handleFilesUploaded}
+      />
+      <AnalysisModal 
+        isOpen={showAnalysis} 
+        onClose={() => setShowAnalysis(false)}
+        files={uploadedFiles}
+      />
+      <DocumentationModal 
+        isOpen={showDocumentation} 
+        onClose={() => setShowDocumentation(false)}
+      />
     </div>
   );
 };

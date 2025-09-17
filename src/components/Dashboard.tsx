@@ -1,11 +1,23 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertTriangle, CheckCircle, Clock, Code, FileText, Search, Upload, Zap } from "lucide-react";
+import FileUpload from "./FileUpload";
+import AnalysisModal from "./AnalysisModal";
 
 const Dashboard = () => {
+  const [showUpload, setShowUpload] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+
+  const handleFilesUploaded = (files: File[]) => {
+    setUploadedFiles(files);
+    setShowUpload(false);
+    setShowAnalysis(true);
+  };
   const analysisResults = [
     { id: 1, file: "auth.py", language: "Python", issues: 3, status: "completed", severity: "medium" },
     { id: 2, file: "utils.js", language: "JavaScript", issues: 1, status: "completed", severity: "low" },
@@ -27,7 +39,10 @@ const Dashboard = () => {
             <h1 className="text-3xl font-bold tracking-tight">AI Code Analysis Platform</h1>
             <p className="text-muted-foreground">Intelligent code maintenance and error detection</p>
           </div>
-          <Button className="bg-primary hover:bg-primary/90">
+          <Button 
+            className="bg-primary hover:bg-primary/90"
+            onClick={() => setShowUpload(true)}
+          >
             <Upload className="mr-2 h-4 w-4" />
             Upload Code
           </Button>
@@ -181,6 +196,18 @@ const Dashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Modals */}
+      <FileUpload 
+        isOpen={showUpload} 
+        onClose={() => setShowUpload(false)}
+        onFilesUploaded={handleFilesUploaded}
+      />
+      <AnalysisModal 
+        isOpen={showAnalysis} 
+        onClose={() => setShowAnalysis(false)}
+        files={uploadedFiles}
+      />
     </div>
   );
 };
