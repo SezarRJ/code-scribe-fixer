@@ -7,6 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertTriangle, CheckCircle, Clock, Code, FileText, Search, Upload, Zap } from "lucide-react";
 import FileUpload from "./FileUpload";
 import AnalysisModal from "./AnalysisModal";
+import DownloadCenter from "./DownloadCenter";
+import KnowledgeBase from "./KnowledgeBase";
+import ApiIntegration from "./ApiIntegration";
 
 const Dashboard = () => {
   const [showUpload, setShowUpload] = useState(false);
@@ -101,6 +104,8 @@ const Dashboard = () => {
             <TabsTrigger value="analysis">Analysis Results</TabsTrigger>
             <TabsTrigger value="fixes">Recent Fixes</TabsTrigger>
             <TabsTrigger value="knowledge">Knowledge Base</TabsTrigger>
+            <TabsTrigger value="downloads">Downloads</TabsTrigger>
+            <TabsTrigger value="api">API Integration</TabsTrigger>
           </TabsList>
           
           <TabsContent value="analysis" className="space-y-4">
@@ -171,28 +176,15 @@ const Dashboard = () => {
           </TabsContent>
           
           <TabsContent value="knowledge" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Knowledge Base</CardTitle>
-                <CardDescription>Search through historical issues and solutions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center space-x-2 mb-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <input
-                      className="w-full rounded-md border border-input bg-background px-10 py-2 text-sm placeholder:text-muted-foreground"
-                      placeholder="Search for issues, languages, or solutions..."
-                    />
-                  </div>
-                  <Button>Search</Button>
-                </div>
-                <div className="text-center py-8 text-muted-foreground">
-                  <Search className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                  <p>Search the knowledge base to find similar issues and proven solutions</p>
-                </div>
-              </CardContent>
-            </Card>
+            <KnowledgeBase />
+          </TabsContent>
+          
+          <TabsContent value="downloads" className="space-y-4">
+            <DownloadCenter />
+          </TabsContent>
+          
+          <TabsContent value="api" className="space-y-4">
+            <ApiIntegration />
           </TabsContent>
         </Tabs>
       </div>
