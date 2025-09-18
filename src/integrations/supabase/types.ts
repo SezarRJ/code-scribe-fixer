@@ -65,6 +65,78 @@ export type Database = {
         }
         Relationships: []
       }
+      api_integrations: {
+        Row: {
+          api_key: string
+          api_name: string
+          created_at: string
+          id: string
+          is_active: boolean
+          last_used_at: string | null
+          usage_count: number
+          user_id: string
+        }
+        Insert: {
+          api_key: string
+          api_name: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_used_at?: string | null
+          usage_count?: number
+          user_id: string
+        }
+        Update: {
+          api_key?: string
+          api_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_used_at?: string | null
+          usage_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      code_fixes: {
+        Row: {
+          created_at: string
+          fix_summary: string
+          fixed_file_content: string
+          fixes_applied: Json
+          id: string
+          language: string
+          original_file_content: string
+          original_file_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          fix_summary: string
+          fixed_file_content: string
+          fixes_applied?: Json
+          id?: string
+          language: string
+          original_file_content: string
+          original_file_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          fix_summary?: string
+          fixed_file_content?: string
+          fixes_applied?: Json
+          id?: string
+          language?: string
+          original_file_content?: string
+          original_file_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       connections: {
         Row: {
           created_at: string
@@ -207,6 +279,42 @@ export type Database = {
         }
         Relationships: []
       }
+      fix_reports: {
+        Row: {
+          batch_id: string
+          created_at: string
+          id: string
+          report_data: Json
+          report_file_url: string | null
+          total_files: number
+          total_fixes_applied: number
+          total_issues: number
+          user_id: string
+        }
+        Insert: {
+          batch_id: string
+          created_at?: string
+          id?: string
+          report_data?: Json
+          report_file_url?: string | null
+          total_files?: number
+          total_fixes_applied?: number
+          total_issues?: number
+          user_id: string
+        }
+        Update: {
+          batch_id?: string
+          created_at?: string
+          id?: string
+          report_data?: Json
+          report_file_url?: string | null
+          total_files?: number
+          total_fixes_applied?: number
+          total_issues?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       investor_profiles: {
         Row: {
           accreditation_verified: boolean | null
@@ -258,6 +366,57 @@ export type Database = {
           ticket_size_min?: number | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      knowledge_base: {
+        Row: {
+          created_at: string
+          description: string | null
+          example_after: string | null
+          example_before: string | null
+          id: string
+          issue_pattern: string
+          issue_type: string
+          language: string
+          severity: string
+          solution_pattern: string
+          success_rate: number
+          tags: string[] | null
+          updated_at: string
+          usage_count: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          example_after?: string | null
+          example_before?: string | null
+          id?: string
+          issue_pattern: string
+          issue_type: string
+          language: string
+          severity: string
+          solution_pattern: string
+          success_rate?: number
+          tags?: string[] | null
+          updated_at?: string
+          usage_count?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          example_after?: string | null
+          example_before?: string | null
+          id?: string
+          issue_pattern?: string
+          issue_type?: string
+          language?: string
+          severity?: string
+          solution_pattern?: string
+          success_rate?: number
+          tags?: string[] | null
+          updated_at?: string
+          usage_count?: number
         }
         Relationships: []
       }
