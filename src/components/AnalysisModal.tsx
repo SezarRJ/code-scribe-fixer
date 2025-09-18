@@ -55,6 +55,8 @@ const AnalysisModal = ({ isOpen, onClose, files }: AnalysisModalProps) => {
   const [currentFile, setCurrentFile] = useState(0);
   const [results, setResults] = useState<AnalysisResult[]>([]);
   const [overallProgress, setOverallProgress] = useState(0);
+  const [isApplyingFixes, setIsApplyingFixes] = useState(false);
+  const [appliedFixes, setAppliedFixes] = useState<string[]>([]);
   const { toast } = useToast();
 
   const mockIssues: Issue[] = [
@@ -270,6 +272,56 @@ const AnalysisModal = ({ isOpen, onClose, files }: AnalysisModalProps) => {
     setIsRunning(false);
   };
 
+  const applyFixes = async () => {
+    setIsApplyingFixes(true);
+    const fixableIssues = results.flatMap(result => 
+      result.issues.filter(issue => issue.suggestion && !appliedFixes.includes(issue.id))
+    );
+
+    if (fixableIssues.length === 0) {
+      toast({
+        title: "No Fixes Available",
+        description: "All available fixes have been applied or no suggestions are available.",
+        variant: "default"
+      });
+      setIsApplyingFixes(false);
+      return;
+    }
+
+    toast({
+      title: "Applying Fixes",
+      description: `Starting to apply ${fixableIssues.length} suggested fixes...`,
+    });
+
+    for (let i = 0; i < fixableIssues.length; i++) {
+      const issue = fixableIssues[i];
+      
+      // Simulate applying fix with delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Mark fix as applied
+      setAppliedFixes(prev => [...prev, issue.id]);
+      
+      toast({
+        title: "Fix Applied",
+        description: `Fixed ${issue.type} issue in line ${issue.line}`,
+        variant: "default"
+      });
+    }
+
+    // Update results to remove applied fixes
+    setResults(prev => prev.map(result => ({
+      ...result,
+      issues: result.issues.filter(issue => !appliedFixes.includes(issue.id) && !fixableIssues.find(f => f.id === issue.id))
+    })));
+
+    setIsApplyingFixes(false);
+    toast({
+      title: "All Fixes Applied",
+      description: `Successfully applied ${fixableIssues.length} fixes to your code.`,
+    });
+  };
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'high': return 'destructive';
@@ -437,23 +489,33 @@ const AnalysisModal = ({ isOpen, onClose, files }: AnalysisModalProps) => {
                       <Card key={issue.id}>
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between">
-                            <div className="flex items-start space-x-3">
-                              {getTypeIcon(issue.type)}
-                              <div className="flex-1">
-                                <div className="font-medium">{issue.message}</div>
-                                <div className="text-sm text-muted-foreground">
-                                  {result.file} • Line {issue.line}:{issue.column}
-                                </div>
-                                {issue.suggestion && (
-                                  <div className="mt-2 p-2 bg-muted rounded text-sm">
-                                    <strong>Suggestion:</strong> {issue.suggestion}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            <Badge variant={getSeverityColor(issue.severity) as any}>
-                              {issue.severity}
-                            </Badge>
+                         <div className="flex items-start space-x-3">
+                           {getTypeIcon(issue.type)}
+                           <div className="flex-1">
+                             <div className="font-medium">{issue.message}</div>
+                             <div className="text-sm text-muted-foreground">
+                               {result.file} • Line {issue.line}:{issue.column}
+                             </div>
+                             {issue.suggestion && (
+                               <div className="mt-2 p-2 bg-muted rounded text-sm">
+                                 <strong>Suggestion:</strong> {issue.suggestion}
+                                 {appliedFixes.includes(issue.id) && (
+                                   <Badge variant="outline" className="ml-2 bg-success/10 text-success border-success">
+                                     Applied
+                                   </Badge>
+                                 )}
+                               </div>
+                             )}
+                           </div>
+                         </div>
+                         <div className="flex items-center space-x-2">
+                           <Badge variant={getSeverityColor(issue.severity) as any}>
+                             {issue.severity}
+                           </Badge>
+                           {appliedFixes.includes(issue.id) && (
+                             <CheckCircle className="h-4 w-4 text-success" />
+                           )}
+                         </div>
                           </div>
                         </CardContent>
                       </Card>
@@ -468,8 +530,22 @@ const AnalysisModal = ({ isOpen, onClose, files }: AnalysisModalProps) => {
             <Button variant="outline" onClick={onClose}>
               Close
             </Button>
-            <Button disabled={totalIssues === 0}>
-              Apply Suggested Fixes
+            <Button 
+              onClick={applyFixes}
+              disabled={totalIssues === 0 || isApplyingFixes}
+              className="bg-success hover:bg-success/90 text-success-foreground"
+            >
+              {isApplyingFixes ? (
+                <>
+                  <Clock className="mr-2 h-4 w-4 animate-spin" />
+                  Applying Fixes...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Apply Suggested Fixes
+                </>
+              )}
             </Button>
           </div>
         </div>
