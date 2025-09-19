@@ -36,13 +36,13 @@ const PlatformArchitecture = () => {
   const phases: Phase[] = [
     {
       id: 'discovery',
-      title: 'Discovery & Requirements',
+      title: 'Discovery & Requirements Analysis',
       description: 'AI-powered requirement analysis and technical estimation',
       icon: <Lightbulb className="w-6 h-6" />,
       status: 'active',
       progress: 75,
       components: ['Questionnaire Bot', 'SRS Parser', 'Requirements Extractor', 'Technical Estimator'],
-      timeline: 'Week 1-2'
+      timeline: 'Phase 1'
     },
     {
       id: 'prototyping',
@@ -51,49 +51,50 @@ const PlatformArchitecture = () => {
       icon: <Palette className="w-6 h-6" />,
       status: 'pending',
       progress: 25,
-      components: ['Wireframe Generator', 'UI/UX Designer', 'Database Schema Creator', 'API Blueprint'],
-      timeline: 'Week 3-4'
+      components: ['Architecture Generator', 'Wireframer', 'Prototype Builder', 'Figma API Integration'],
+      timeline: 'Phase 2'
     },
     {
       id: 'development',
-      title: 'AI Development Engine',
-      description: 'Automated code generation for full-stack applications',
+      title: 'MVP Development & QA',
+      description: 'Full-stack development with integrated quality assurance',
       icon: <Code className="w-6 h-6" />,
       status: 'pending',
       progress: 0,
-      components: ['Backend Generator', 'Frontend Generator', 'Database Setup', 'CI/CD Pipeline'],
-      timeline: 'Week 5-8'
-    },
-    {
-      id: 'qa',
-      title: 'QA & Testing Engine',
-      description: 'Multi-layered validation and security testing',
-      icon: <TestTube className="w-6 h-6" />,
-      status: 'pending',
-      progress: 0,
-      components: ['Code Analysis', 'Security Scan', 'Performance Test', 'Integration Test'],
-      timeline: 'Week 9-10'
+      components: ['Backend/Frontend/Database Automation', 'CI-CD Pipeline', 'Syntax & Logic Validation', 'Performance & Security Testing'],
+      timeline: 'Phase 3'
     },
     {
       id: 'deployment',
-      title: 'Deployment Orchestrator',
-      description: 'Automated deployment and release management',
+      title: 'Deployment & Final Release',
+      description: 'Automated deployment and customer delivery orchestration',
       icon: <Rocket className="w-6 h-6" />,
       status: 'pending',
       progress: 0,
-      components: ['Container Orchestration', 'Cloud Deployment', 'Release Automation', 'Customer Delivery'],
-      timeline: 'Week 11'
+      components: ['Release Automation', 'Customer Delivery', 'Production Monitoring', 'Launch Validation'],
+      timeline: 'Phase 4'
     },
     {
       id: 'maintenance',
-      title: 'AI Maintenance Platform',
-      description: 'Continuous monitoring, bug detection, and automated fixes',
+      title: 'Continuous AI Maintenance',
+      description: 'Standalone & integrated AI-powered maintenance platform',
       icon: <Wrench className="w-6 h-6" />,
       status: 'pending',
       progress: 0,
-      components: ['Bug Detection', 'Auto Fixes', 'Knowledge Base', 'External API'],
-      timeline: 'Week 12+'
+      components: ['Code Ingestion', 'Language Detection', 'Multi-layered Analysis', 'Knowledge Base Learning'],
+      timeline: 'Phase 5'
     }
+  ];
+
+  const maintenanceFeatures = [
+    'Code ingestion (files, repos, API)',
+    'Language detection & dependency graph',
+    'Multi-layered analysis (AI + static tools + sandbox profiling)',
+    'Structured diagnostics with severity/confidence',
+    'Automated fix suggestions + validation in sandbox',
+    'Knowledge Base (versioned, queryable)',
+    'API endpoints (/upload, /analysis, /fix, /kb, /metrics)',
+    'Dashboard (reports, metrics, exports)'
   ];
 
   const techStack = {
@@ -119,7 +120,7 @@ const PlatformArchitecture = () => {
 
         <Tabs value={selectedPhase} onValueChange={setSelectedPhase} className="space-y-8">
           {/* Phase Timeline */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {phases.map((phase) => (
               <Card 
                 key={phase.id}
@@ -147,7 +148,7 @@ const PlatformArchitecture = () => {
           </div>
 
           {/* Phase Details */}
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-5">
             {phases.map((phase) => (
               <TabsTrigger key={phase.id} value={phase.id} className="text-xs">
                 {phase.title.split(' ')[0]}
@@ -188,13 +189,52 @@ const PlatformArchitecture = () => {
                         <p>Status: <Badge variant="outline">{phase.status}</Badge></p>
                         <p>Progress: {phase.progress}%</p>
                       </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          ))}
-        </Tabs>
+                     </div>
+                   </div>
+                 </CardContent>
+               </Card>
+             </TabsContent>
+           ))}
+         </Tabs>
+
+         {/* AI Maintenance Component Details */}
+         <Card className="mt-8">
+           <CardHeader>
+             <CardTitle className="flex items-center gap-2">
+               <Wrench className="w-6 h-6" />
+               AI Maintenance Component (Standalone & Integrated)
+             </CardTitle>
+             <CardDescription>
+               Comprehensive AI-powered maintenance platform features
+             </CardDescription>
+           </CardHeader>
+           <CardContent>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <div>
+                 <h4 className="font-semibold mb-3">Core Features</h4>
+                 <div className="space-y-2">
+                   {maintenanceFeatures.slice(0, 4).map((feature, index) => (
+                     <div key={index} className="flex items-start gap-2 p-2 bg-muted/50 rounded-lg">
+                       <Zap className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                       <span className="text-sm">{feature}</span>
+                     </div>
+                   ))}
+                 </div>
+               </div>
+               <div>
+                 <h4 className="font-semibold mb-3">Advanced Capabilities</h4>
+                 <div className="space-y-2">
+                   {maintenanceFeatures.slice(4).map((feature, index) => (
+                     <div key={index} className="flex items-start gap-2 p-2 bg-muted/50 rounded-lg">
+                       <Shield className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                       <span className="text-sm">{feature}</span>
+                     </div>
+                   ))}
+                 </div>
+               </div>
+             </div>
+           </CardContent>
+         </Card>
 
         {/* Technology Stack Overview */}
         <Card className="mt-12">
