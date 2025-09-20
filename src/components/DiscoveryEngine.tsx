@@ -1,504 +1,412 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   MessageSquare, 
-  FileText, 
-  Brain, 
-  Calculator, 
-  CheckCircle, 
-  Clock,
-  Users,
-  DollarSign,
-  Zap,
-  Shield
+  Target, 
+  Zap, 
+  Download, 
+  Send,
+  ShoppingCart,
+  Store,
+  Upload,
+  FileText,
+  DollarSign
 } from 'lucide-react';
 
-interface Requirement {
-  id: string;
-  type: 'functional' | 'non-functional' | 'technical';
-  priority: 'high' | 'medium' | 'low';
-  description: string;
-  estimatedHours: number;
-  complexity: 'simple' | 'moderate' | 'complex';
-}
-
-interface ProjectEstimate {
-  totalHours: number;
-  complexity: string;
-  estimatedCost: number;
-  timeline: string;
-  teamSize: number;
-  techStack: string[];
-  risks: string[];
-}
-
 const DiscoveryEngine = () => {
-  const [activeTab, setActiveTab] = useState('questionnaire');
-  const [projectIdea, setProjectIdea] = useState('');
-  const [srsDocument, setSrsDocument] = useState('');
-  const [questionnaire, setQuestionnaire] = useState({
-    projectType: '',
-    targetUsers: '',
-    mainFeatures: '',
-    budget: '',
-    timeline: '',
-    platform: '',
-    integrations: ''
-  });
-  const [requirements, setRequirements] = useState<Requirement[]>([]);
-  const [estimate, setEstimate] = useState<ProjectEstimate | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const { toast } = useToast();
-
-  const questions = [
-    { 
-      key: 'projectType', 
-      label: 'What type of application do you want to build?',
-      placeholder: 'e.g., E-commerce platform, Social media app, Business management system'
-    },
-    { 
-      key: 'targetUsers', 
-      label: 'Who are your target users?',
-      placeholder: 'e.g., Small business owners, Students, Healthcare professionals'
-    },
-    { 
-      key: 'mainFeatures', 
-      label: 'What are the main features you need?',
-      placeholder: 'e.g., User authentication, Payment processing, Real-time chat'
-    },
-    { 
-      key: 'budget', 
-      label: 'What is your estimated budget range?',
-      placeholder: 'e.g., $10k-50k, $50k-100k, $100k+'
-    },
-    { 
-      key: 'timeline', 
-      label: 'What is your desired timeline?',
-      placeholder: 'e.g., 3 months, 6 months, 1 year'
-    },
-    { 
-      key: 'platform', 
-      label: 'Which platforms do you need?',
-      placeholder: 'e.g., Web, Mobile (iOS/Android), Desktop'
-    },
-    { 
-      key: 'integrations', 
-      label: 'Do you need any third-party integrations?',
-      placeholder: 'e.g., Payment gateways, Social media, Analytics, CRM systems'
+  const [chatMessages, setChatMessages] = useState<Array<{
+    role: 'user' | 'ai';
+    content: string;
+    timestamp: Date;
+    interactive?: any;
+  }>>([
+    {
+      role: 'ai',
+      content: "Hello! I'm your AI Factory assistant. I'll help you build your web application from concept to deployment. What kind of application would you like to create today?",
+      timestamp: new Date()
     }
-  ];
+  ]);
+  
+  const [currentInput, setCurrentInput] = useState('');
+  const [projectData, setProjectData] = useState<any>({});
+  const [conversationStage, setConversationStage] = useState<'discovery' | 'requirements' | 'proposal' | 'prototype' | 'development'>('discovery');
 
-  const analyzeIdea = async () => {
-    setIsAnalyzing(true);
-    setProgress(0);
-
-    try {
-      // Simulate AI analysis with progress updates
-      const progressSteps = [
-        'Parsing project requirements...',
-        'Analyzing technical complexity...',
-        'Estimating development effort...',
-        'Generating architecture recommendations...',
-        'Calculating project timeline...',
-        'Preparing final recommendations...'
-      ];
-
-      for (let i = 0; i < progressSteps.length; i++) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setProgress((i + 1) * (100 / progressSteps.length));
-        
-        toast({
-          title: "Analysis Progress",
-          description: progressSteps[i],
-        });
-      }
-
-      // Generate mock requirements
-      const mockRequirements: Requirement[] = [
-        {
-          id: '1',
-          type: 'functional',
-          priority: 'high',
-          description: 'User authentication and authorization system',
-          estimatedHours: 40,
-          complexity: 'moderate'
-        },
-        {
-          id: '2',
-          type: 'functional',
-          priority: 'high',
-          description: 'Core business logic implementation',
-          estimatedHours: 80,
-          complexity: 'complex'
-        },
-        {
-          id: '3',
-          type: 'functional',
-          priority: 'medium',
-          description: 'Payment processing integration',
-          estimatedHours: 30,
-          complexity: 'moderate'
-        },
-        {
-          id: '4',
-          type: 'non-functional',
-          priority: 'high',
-          description: 'Security implementation and compliance',
-          estimatedHours: 50,
-          complexity: 'complex'
-        },
-        {
-          id: '5',
-          type: 'technical',
-          priority: 'medium',
-          description: 'Database design and optimization',
-          estimatedHours: 35,
-          complexity: 'moderate'
-        }
-      ];
-
-      // Generate mock estimate
-      const mockEstimate: ProjectEstimate = {
-        totalHours: 235,
-        complexity: 'Moderate to Complex',
-        estimatedCost: 47000,
-        timeline: '4-6 months',
-        teamSize: 4,
-        techStack: ['React/Next.js', 'Node.js/Python', 'PostgreSQL', 'AWS/GCP'],
-        risks: [
-          'Third-party API integration complexity',
-          'Scalability requirements may increase development time',
-          'Security compliance requirements'
-        ]
-      };
-
-      setRequirements(mockRequirements);
-      setEstimate(mockEstimate);
-
-      toast({
-        title: "Analysis Complete",
-        description: "Project requirements and estimates have been generated.",
-      });
-    } catch (error) {
-      toast({
-        title: "Analysis Failed",
-        description: "There was an error analyzing your project. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAnalyzing(false);
+  const conversationFlow = {
+    discovery: {
+      title: "Project Discovery",
+      description: "Understanding your vision and requirements",
+      nextStage: "requirements"
+    },
+    requirements: {
+      title: "Requirements Gathering", 
+      description: "Defining technical specifications and features",
+      nextStage: "proposal"
+    },
+    proposal: {
+      title: "Proposal & Estimation",
+      description: "Generating SRS document and cost estimate",
+      nextStage: "prototype" 
+    },
+    prototype: {
+      title: "Prototype Generation",
+      description: "Creating interactive prototype for approval",
+      nextStage: "development"
+    },
+    development: {
+      title: "Development & Deployment",
+      description: "Building and launching your application",
+      nextStage: "maintenance"
     }
   };
 
-  const handleQuestionnaireUpdate = (key: string, value: string) => {
-    setQuestionnaire(prev => ({ ...prev, [key]: value }));
+  const handleSendMessage = () => {
+    if (!currentInput.trim()) return;
+
+    const userMessage = {
+      role: 'user' as const,
+      content: currentInput,
+      timestamp: new Date()
+    };
+
+    setChatMessages(prev => [...prev, userMessage]);
+    
+    // Simulate AI response based on conversation stage and input
+    setTimeout(() => {
+      const aiResponse = generateAIResponse(currentInput, conversationStage);
+      setChatMessages(prev => [...prev, aiResponse]);
+    }, 1000);
+
+    setCurrentInput('');
+  };
+
+  const generateAIResponse = (userInput: string, stage: string) => {
+    const responses = {
+      discovery: [
+        "That sounds like an exciting project! Let me ask you a few questions to better understand your vision. What industry or market will this application serve?",
+        "Great! Can you tell me more about your target users? Will they be businesses, consumers, or both?",
+        "Interesting! What are the main problems this application will solve for your users?"
+      ],
+      requirements: [
+        "Perfect! Now let's dive into the technical requirements. Will users need to create accounts and log in?",
+        "Excellent! Do you need payment processing capabilities? If so, what types of payments?",
+        "Got it! What about data storage - will users upload files, create content, or manage profiles?"
+      ],
+      proposal: [
+        "Based on our conversation, I'm generating a comprehensive Software Requirements Specification (SRS) document and cost estimate. This should take just a moment...",
+        "I've analyzed your requirements and created a detailed proposal. The estimated cost is $25,000-35,000 with a 6-8 week timeline. Would you like to review the full SRS document?",
+        "Excellent! I'll prepare the proposal with wireframes, technical architecture, and a detailed project plan. A 15% deposit will kickstart the development process."
+      ]
+    };
+
+    const stageResponses = responses[stage] || responses.discovery;
+    const randomResponse = stageResponses[Math.floor(Math.random() * stageResponses.length)];
+
+    return {
+      role: 'ai' as const,
+      content: randomResponse,
+      timestamp: new Date(),
+      interactive: stage === 'proposal' ? {
+        type: 'proposal',
+        data: {
+          estimatedCost: '$25,000-35,000',
+          timeline: '6-8 weeks',
+          features: ['User Authentication', 'Payment Processing', 'Admin Dashboard', 'Mobile Responsive'],
+          techStack: ['Next.js', 'FastAPI', 'PostgreSQL', 'Stripe']
+        }
+      } : null
+    };
+  };
+
+  const handleQuickAction = (action: string) => {
+    let message = '';
+    switch (action) {
+      case 'marketplace':
+        message = "I want to build a marketplace for artisans to sell their handmade goods.";
+        break;
+      case 'saas':
+        message = "I need a SaaS platform for project management and team collaboration.";
+        break;
+      case 'ecommerce':
+        message = "I want to create an e-commerce website for my local bakery.";
+        break;
+      case 'upload':
+        message = "I have an existing SRS document I'd like to upload.";
+        break;
+    }
+    setCurrentInput(message);
+  };
+
+  const advanceStage = () => {
+    const stages = ['discovery', 'requirements', 'proposal', 'prototype', 'development'];
+    const currentIndex = stages.indexOf(conversationStage);
+    if (currentIndex < stages.length - 1) {
+      setConversationStage(stages[currentIndex + 1] as any);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Brain className="w-6 h-6" />
-            AI Discovery Engine
-          </CardTitle>
-          <CardDescription>
-            Transform your ideas into detailed technical requirements and project estimates
-          </CardDescription>
-        </CardHeader>
-      </Card>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-primary mb-4">
+            AI Factory - Conversational Development
+          </h1>
+          <p className="text-xl text-muted-foreground">
+            Build your application through natural conversation with AI
+          </p>
+        </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="questionnaire">
-            <MessageSquare className="w-4 h-4 mr-2" />
-            Questionnaire
-          </TabsTrigger>
-          <TabsTrigger value="srs">
-            <FileText className="w-4 h-4 mr-2" />
-            SRS Upload
-          </TabsTrigger>
-          <TabsTrigger value="requirements">
-            <CheckCircle className="w-4 h-4 mr-2" />
-            Requirements
-          </TabsTrigger>
-          <TabsTrigger value="estimate">
-            <Calculator className="w-4 h-4 mr-2" />
-            Estimates
-          </TabsTrigger>
-        </TabsList>
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Conversation Stage Indicator */}
+          <div className="lg:col-span-1">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-primary" />
+                  Current Stage
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <Badge variant="default" className="mb-2">
+                      {conversationFlow[conversationStage].title}
+                    </Badge>
+                    <p className="text-sm text-muted-foreground">
+                      {conversationFlow[conversationStage].description}
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium">Quick Actions:</h4>
+                    <div className="space-y-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full justify-start"
+                        onClick={() => handleQuickAction('marketplace')}
+                      >
+                        <ShoppingCart className="h-4 w-4 mr-2" />
+                        Marketplace App
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full justify-start"
+                        onClick={() => handleQuickAction('saas')}
+                      >
+                        <Zap className="h-4 w-4 mr-2" />
+                        SaaS Platform
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full justify-start"
+                        onClick={() => handleQuickAction('ecommerce')}
+                      >
+                        <Store className="h-4 w-4 mr-2" />
+                        E-commerce Site
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full justify-start"
+                        onClick={() => handleQuickAction('upload')}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload SRS
+                      </Button>
+                    </div>
+                  </div>
 
-        <TabsContent value="questionnaire" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Project Discovery Questionnaire</CardTitle>
-              <CardDescription>
-                Answer these questions to help our AI understand your project requirements
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  Describe your project idea in detail
-                </label>
-                <Textarea
-                  placeholder="Provide a comprehensive description of your project idea, goals, and vision..."
-                  value={projectIdea}
-                  onChange={(e) => setProjectIdea(e.target.value)}
-                  className="h-32"
-                />
-              </div>
+                  <div className="pt-4 border-t">
+                    <h4 className="text-sm font-medium mb-2">Workflow Progress:</h4>
+                    <div className="space-y-1">
+                      {Object.keys(conversationFlow).map((stage, index) => (
+                        <div 
+                          key={stage}
+                          className={`text-xs p-2 rounded ${
+                            stage === conversationStage 
+                              ? 'bg-primary text-primary-foreground' 
+                              : 'bg-secondary text-secondary-foreground'
+                          }`}
+                        >
+                          {index + 1}. {conversationFlow[stage as keyof typeof conversationFlow].title}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Chat Interface */}
+          <div className="lg:col-span-2">
+            <Card className="h-[600px] flex flex-col">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5 text-primary" />
+                  Conversational Dashboard
+                </CardTitle>
+                <CardDescription>
+                  Your AI-powered project assistant
+                </CardDescription>
+              </CardHeader>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {questions.map((question) => (
-                  <div key={question.key}>
-                    <label className="text-sm font-medium mb-2 block">
-                      {question.label}
-                    </label>
-                    <Textarea
-                      placeholder={question.placeholder}
-                      value={questionnaire[question.key as keyof typeof questionnaire]}
-                      onChange={(e) => handleQuestionnaireUpdate(question.key, e.target.value)}
-                      className="h-20"
-                    />
+              {/* Chat Messages */}
+              <CardContent className="flex-1 overflow-y-auto space-y-4 p-4">
+                {chatMessages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-[80%] rounded-lg p-3 ${
+                        message.role === 'user'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-secondary text-secondary-foreground'
+                      }`}
+                    >
+                      <p className="text-sm">{message.content}</p>
+                      
+                      {/* Interactive Elements */}
+                      {message.interactive?.type === 'proposal' && (
+                        <div className="mt-3 p-3 bg-background/50 rounded border space-y-2">
+                          <h4 className="font-medium text-sm">🎯 Project Proposal</h4>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="flex items-center gap-1">
+                              <DollarSign className="h-3 w-3" />
+                              <span className="text-muted-foreground">Cost:</span> {message.interactive.data.estimatedCost}
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Timeline:</span> {message.interactive.data.timeline}
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-xs font-medium">Features:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {message.interactive.data.features.map((feature: string, i: number) => (
+                                <Badge key={i} variant="outline" className="text-xs">{feature}</Badge>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="flex gap-2 mt-2">
+                            <Button size="sm" variant="outline">
+                              <Download className="h-3 w-3 mr-1" />
+                              Download SRS
+                            </Button>
+                            <Button size="sm" onClick={advanceStage}>
+                              <DollarSign className="h-3 w-3 mr-1" />
+                              Pay 15% Deposit
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <p className="text-xs opacity-70 mt-1">
+                        {message.timestamp.toLocaleTimeString()}
+                      </p>
+                    </div>
                   </div>
                 ))}
-              </div>
-
-              <Button 
-                onClick={analyzeIdea}
-                disabled={isAnalyzing || !projectIdea.trim()}
-                className="w-full"
-                size="lg"
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Clock className="w-4 h-4 mr-2 animate-spin" />
-                    Analyzing Project...
-                  </>
-                ) : (
-                  <>
-                    <Brain className="w-4 h-4 mr-2" />
-                    Analyze Project Requirements
-                  </>
-                )}
-              </Button>
-
-              {isAnalyzing && (
-                <div className="space-y-2">
-                  <Progress value={progress} />
-                  <p className="text-sm text-muted-foreground text-center">
-                    AI is analyzing your project... {Math.round(progress)}%
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="srs" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload SRS Document</CardTitle>
-              <CardDescription>
-                Upload your Software Requirements Specification document for automated analysis
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Textarea
-                placeholder="Paste your SRS document content here, or use the file upload feature below..."
-                value={srsDocument}
-                onChange={(e) => setSrsDocument(e.target.value)}
-                className="h-64"
-              />
+              </CardContent>
               
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-                <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-semibold mb-2">Upload SRS Document</h3>
-                <p className="text-muted-foreground mb-4">
-                  Drag and drop your SRS file here, or click to browse
-                </p>
-                <Button variant="outline">
-                  Choose File
-                </Button>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Supports PDF, DOC, DOCX, TXT files
-                </p>
+              {/* Input Area */}
+              <div className="p-4 border-t">
+                <div className="flex gap-2">
+                  <Textarea
+                    placeholder="Type your message here..."
+                    value={currentInput}
+                    onChange={(e) => setCurrentInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
+                    className="min-h-[60px] resize-none"
+                  />
+                  <Button 
+                    onClick={handleSendMessage}
+                    disabled={!currentInput.trim()}
+                    size="lg"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
+            </Card>
+          </div>
+        </div>
 
-              <Button 
-                onClick={analyzeIdea}
-                disabled={isAnalyzing || (!srsDocument.trim())}
-                className="w-full"
-                size="lg"
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Clock className="w-4 h-4 mr-2 animate-spin" />
-                    Processing SRS...
-                  </>
-                ) : (
-                  <>
-                    <Brain className="w-4 h-4 mr-2" />
-                    Process SRS Document
-                  </>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="requirements" className="space-y-6">
+        {/* Phase Description */}
+        <div className="mt-8">
           <Card>
             <CardHeader>
-              <CardTitle>Generated Requirements</CardTitle>
+              <CardTitle>AI Factory Three-Phase Journey</CardTitle>
               <CardDescription>
-                AI-extracted and structured requirements from your project description
+                Complete development lifecycle managed through conversational AI
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {requirements.length > 0 ? (
-                <div className="space-y-4">
-                  {requirements.map((req) => (
-                    <div key={req.id} className="border rounded-lg p-4 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Badge variant={req.type === 'functional' ? 'default' : req.type === 'non-functional' ? 'secondary' : 'outline'}>
-                            {req.type}
-                          </Badge>
-                          <Badge variant={req.priority === 'high' ? 'destructive' : req.priority === 'medium' ? 'default' : 'secondary'}>
-                            {req.priority} priority
-                          </Badge>
-                          <Badge variant="outline">
-                            {req.complexity}
-                          </Badge>
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {req.estimatedHours}h estimated
-                        </div>
-                      </div>
-                      <p className="text-sm">{req.description}</p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <CheckCircle className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold mb-2">No Requirements Generated</h3>
-                  <p className="text-muted-foreground">
-                    Complete the questionnaire or upload an SRS document to generate requirements
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">1</div>
+                    <h3 className="font-semibold">Project Initiation</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Conversational requirements discovery → SRS generation → Cost estimation → 15% deposit
                   </p>
+                  <div className="text-xs space-y-1">
+                    <div>✓ Natural language project description</div>
+                    <div>✓ AI-guided clarifying questions</div>
+                    <div>✓ Automated SRS document</div>
+                    <div>✓ Transparent pricing</div>
+                  </div>
                 </div>
-              )}
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">2</div>
+                    <h3 className="font-semibold">Build & Deploy</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Prototype generation → Feedback integration → Code generation → Testing → Production deployment
+                  </p>
+                  <div className="text-xs space-y-1">
+                    <div>✓ Interactive prototype</div>
+                    <div>✓ Conversational feedback</div>
+                    <div>✓ Production-ready code</div>
+                    <div>✓ Automated testing</div>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">3</div>
+                    <h3 className="font-semibold">Maintenance</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Continuous monitoring → Autonomous fixes → Performance optimization → Security updates
+                  </p>
+                  <div className="text-xs space-y-1">
+                    <div>✓ Real-time monitoring</div>
+                    <div>✓ Proactive issue detection</div>
+                    <div>✓ Automated patch application</div>
+                    <div>✓ Technical debt prevention</div>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="estimate" className="space-y-6">
-          {estimate ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="w-5 h-5" />
-                    Timeline
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold mb-2">{estimate.timeline}</div>
-                  <p className="text-sm text-muted-foreground">
-                    {estimate.totalHours} development hours
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <DollarSign className="w-5 h-5" />
-                    Cost Estimate
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold mb-2">
-                    ${estimate.estimatedCost.toLocaleString()}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Based on {estimate.teamSize} team members
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Zap className="w-5 h-5" />
-                    Complexity
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold mb-2">{estimate.complexity}</div>
-                  <p className="text-sm text-muted-foreground">
-                    Project complexity level
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="md:col-span-2 lg:col-span-3">
-                <CardHeader>
-                  <CardTitle>Recommended Technology Stack</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {estimate.techStack.map((tech, index) => (
-                      <Badge key={index} variant="secondary">
-                        {tech}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="md:col-span-2 lg:col-span-3">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="w-5 h-5" />
-                    Project Risks
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {estimate.risks.map((risk, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <div className="w-2 h-2 rounded-full bg-amber-500 mt-2 flex-shrink-0" />
-                        <span className="text-sm">{risk}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-          ) : (
-            <Card>
-              <CardContent className="text-center py-12">
-                <Calculator className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-semibold mb-2">No Estimates Available</h3>
-                <p className="text-muted-foreground">
-                  Complete the project analysis to generate cost and timeline estimates
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
     </div>
   );
 };
